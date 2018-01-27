@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: swarm
+  labels:
+    app: swarm
+spec:
+  ports:
+    port: 8500
+    targetPort: 8500
+  selector:
+    app: swarm
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: swarm
+spec:
+  serviceName: "geth"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: swarm
+  template:
+    metadata:
+      labels:
+        app: swarm
+    spec:
+      containers:
+      - image: ethereum/client-go:alltools-v1.7.3
+        name: swarm
+        env:
+          - name: BZZ_KEY
+            valueFrom:
+              secretKeyRef:
+                name: geth
+                key: bzz-key
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+        command: ["swarm"]
+        args:
+          - "--bzzaccount=$(BZZ_KEY)"
+          - "--datadir=/mnt/efs"
+          - "--ens-api=/mnt/geth/geth.ipc"
+          - "--keystore=/mnt/geth/keystore"
+          - "--password=/etc/geth/password"
+          - "--httpaddr=0.0.0.0"
+          - "--corsdomain=*"
+          - "--verbosity=4"
+        ports:
+        - containerPort: 8500
+        volumeMounts:
+        - name: efs-geth
+          mountPath: "/mnt/geth"
+        - name: efs
+          mountPath: "/mnt/efs"
+        - name: geth
+          mountPath: "/etc/geth"
+          readOnly: true
+      volumes:
+      - name: efs-geth
+        persistentVolumeClaim:
+          claimName: efs
+      - name: geth
+        secret:
+          secretName: geth
+  volumeClaimTemplates:
+  - metadata:
+      name: efs
+      annotations:
+        volume.beta.kubernetes.io/storage-class: aws-efs
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Mi
