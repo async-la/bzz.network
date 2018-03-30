@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: bzz.network
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  rules:
+  - host: bzz.network
+    http:
+      paths:
+      - path: "/geth"
+        backend:
+          serviceName: geth
+          servicePort: 8545
+      - path: "/bzz:"
+        backend:
+          serviceName: swarm
+          servicePort: 8500
+      - path: "/bzz-immutable:"
+        backend:
+          serviceName: swarm
+          servicePort: 8500
+      - path: "/bzz-raw:"
+        backend:
+          serviceName: swarm
+          servicePort: 8500
+      - path: "/bzzi:"
+        backend:
+          serviceName: swarm
+          servicePort: 8500
+      - path: "/bzzr:"
+        backend:
+          serviceName: swarm
+          servicePort: 8500

@@ -48,7 +48,7 @@ spec:
           - "--keystore=/mnt/geth/keystore"
           - "--password=/etc/geth/password"
           - "--httpaddr=0.0.0.0"
-          - "--bootnodes=enode://b5223c7a866aa20f215e3fe3f5d3a8fac974ba581a4977e488fef5926c115e1fa98d0b4ebd1549f30535401897b17b86b6bd6e7159137a0a089a7b4bd0b56542@100.96.5.2:30399"
+          - "--bootnodes=enode://e85104f55917d4a58d3603ecedeff744514cc25fde9e2945b5c89331aae2753b0bff61f14aa132d1dfe2c7957a9c7a895fbd7a6a8ed75506ef69635164995620@100.96.4.2:30399"
         resources:
           requests:
             cpu: "10m"
@@ -58,6 +58,7 @@ spec:
         volumeMounts:
         - name: efs-geth
           mountPath: "/mnt/geth"
+          readOnly: true
         - name: efs
           mountPath: "/mnt/efs"
         - name: geth
