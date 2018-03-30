@@ -47,8 +47,10 @@ spec:
           - "--keystore=/mnt/geth/keystore"
           - "--password=/etc/geth/password"
           - "--httpaddr=0.0.0.0"
-          - "--corsdomain=*"
-          - "--verbosity=4"
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "3Gi"
         ports:
         - containerPort: 8500
         volumeMounts:
