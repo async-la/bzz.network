@@ -5,6 +5,31 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($request_method = 'OPTIONS') {
+         more_set_headers 'Access-Control-Allow-Origin $http_origin';
+         more_set_headers 'Access-Control-Allow-Credentials true';
+         more_set_headers 'Access-Control-Allow-Methods GET, POST, OPTIONS';
+         more_set_headers 'Access-Control-Allow-Headers DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range';
+         more_set_headers 'Access-Control-Max-Age 1728000';
+         more_set_headers 'Content-Type text/plain; charset=utf-8';
+         more_set_headers 'Content-Length 0';
+         return 204;
+      }
+      if ($request_method = 'POST') {
+         more_set_headers 'Access-Control-Allow-Origin $http_origin';
+         more_set_headers 'Access-Control-Allow-Credentials true';
+         more_set_headers 'Access-Control-Allow-Methods GET, POST, OPTIONS';
+         more_set_headers 'Access-Control-Allow-Headers DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range';
+         more_set_headers 'Access-Control-Expose-Headers DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range';
+      }
+      if ($request_method = 'GET') {
+         more_set_headers 'Access-Control-Allow-Origin $http_origin';
+         more_set_headers 'Access-Control-Allow-Credentials true';
+         more_set_headers 'Access-Control-Allow-Methods GET, POST, OPTIONS';
+         more_set_headers 'Access-Control-Allow-Headers DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range';
+         more_set_headers 'Access-Control-Expose-Headers DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range';
+      }
 spec:
   rules:
   - host: test.bzz.network
@@ -15,6 +40,14 @@ spec:
           serviceName: geth
           servicePort: 8545
       - path: "/bzz:"
+        backend:
+          serviceName: swarm
+          servicePort: 8500
+      - path: "/bzz-immutable:"
+        backend:
+          serviceName: swarm
+          servicePort: 8500
+      - path: "/bzz-raw:"
         backend:
           serviceName: swarm
           servicePort: 8500
